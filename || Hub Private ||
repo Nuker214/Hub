@@ -1,9 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Whitelisted || Private Hub ||",
+   Name = "Whitelisted || Khaotic Hub||",
    Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Rayfield Interface Suite",
+   LoadingTitle = "Welcome To Khoatic Hub",
    LoadingSubtitle = "By Ghostwatcher",
    Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
    ConfigurationSaving = {
       Enabled = true,
       FolderName = Hub, -- Create a custom folder for your hub/game
-      FileName = "Private Hub"
+      FileName = "Private"
    },
 
    Discord = {
@@ -34,4 +34,13 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
+Rayfield:Notify({
+   Title = "Khaotic Hub",
+   Content = "Welcome To Khaotic Hub",
+   Duration = 5,
+   Image = 4483362458,
+})
+
 local Tab = Window:CreateTab("Main Page", 4483362458) -- Title, Image
+local Divider = Tab:CreateDivider()
+local Divider = Tab:CreateDivider()
