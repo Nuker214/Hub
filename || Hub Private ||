@@ -44,3 +44,33 @@ Rayfield:Notify({
 local Tab = Window:CreateTab("Main Page", 4483362458) -- Title, Image
 local Divider = Tab:CreateDivider()
 local Divider = Tab:CreateDivider()
+
+local Button = Tab:CreateButton({
+   Name = "AntiGrab",
+   Callback = function()
+   local AntiGrab = usertab:CreateToggle({
+			Name = "Anti Grab & Anti Blob", 
+			CurrentValue = false,
+			Flag = "AntiGrab", 
+			Callback = function(Value)
+				antiGrabToggle = Value
+				while antiGrabToggle and task.wait() do
+					local v2, v3, v1 = get_all()
+					if v1 and v2 and check_hum(v3) then
+						if v1:FindFirstChild("PartOwner") then
+							local v4 = v1.PartOwner.Value; if v4 then 
+								local v5 = S.w.chars:FindFirstChild(v4); if v5 and check_prem(v5) and check_whll(v5) then
+									task.spawn(After_AG, v5)
+								end
+							end
+							v2.Anchored = true
+							while O.me.IsHeld.Value and task.wait() do O.Events.StruggleEvent:FireServer(O.me) end
+							task.wait(0.3)
+							v2.Anchored = false
+						end
+					end
+				end
+			end,
+		})
+   end,
+})
