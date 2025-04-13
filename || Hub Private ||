@@ -45,9 +45,9 @@ local Tab = Window:CreateTab("Main Page", 4483362458) -- Title, Image
 local Divider = Tab:CreateDivider()
 
 local Button = Tab:CreateButton({
-   Name = "Anti grab",
+   Name = "Anti Grab",
    Callback = function()
-  BeingHeld.Changed:Connect(function(C)
+BeingHeld.Changed:Connect(function(C)
     if C == true then
         local char = Player.Character
  
@@ -81,9 +81,10 @@ local function reconnect()
             end
         end
     end)
-end,
+end
+ 
+reconnect()
+ 
+Player.CharacterAdded:Connect(reconnect)
+   end,
 })
-
-
-
-
