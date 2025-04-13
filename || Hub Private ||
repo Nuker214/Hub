@@ -44,150 +44,46 @@ Rayfield:Notify({
 local Tab = Window:CreateTab("Main Page", 4483362458) -- Title, Image
 local Divider = Tab:CreateDivider()
 
-local ss = usertab:CreateSlider({
-			Name = "Strenght Slider",
-			Range = {-1600, 1600},
-			Increment = 10,
-			Suffix = "(400 Optimal)",
-			CurrentValue = 400,
-			Flag = "StrenghtSlider",
-			Callback = function(Value)
-				N.strength = Value 
-			end,
-		})
+local Button = Tab:CreateButton({
+   Name = "Anti grab",
+   Callback = function()
+  BeingHeld.Changed:Connect(function(C)
+    if C == true then
+        local char = Player.Character
+ 
+        if BeingHeld.Value == true then
+            local Event;
+            Event = R.RenderStepped:Connect(function()
+                if BeingHeld.Value == true then
+                    char["HumanoidRootPart"].AssemblyLinearVelocity = Vector3.new()
+                    StruggleEvent:FireServer(Player)
+                elseif BeingHeld.Value == false then
+                    Event:Disconnect()
+                end
+            end)
+        end
+    end
+end)
+ 
+local function reconnect()
+    local Character = Player.Character or Player.CharacterAdded:Wait()
+    local Humanoid = Character:FindFirstChildWhichIsA("Humanoid") or Character:WaitForChild("Humanoid")
+    local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+ 
+    HumanoidRootPart:WaitForChild("FirePlayerPart"):Remove()
+ 
+    Humanoid.Changed:Connect(function(C)
+        if C == "Sit" and Humanoid.Sit == true then
+            if Humanoid.SeatPart ~= nil and tostring(Humanoid.SeatPart.Parent) == "CreatureBlobman" then
+            elseif Humanoid.SeatPart == nil then
+            Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+            Humanoid.Sit = false
+            end
+        end
+    end)
+end,
+})
 
-		usertab:CreateInput({
-			Name = "Strenght Input",
-			PlaceholderText = "Type Strenght Value",
-			RemoveTextAfterFocusLost = false,
-			Callback = function(Text)
-				ss:Set(Text)
-				N.strength = Text
-			end,
-		})
 
-		usertab:CreateKeybind({
-			Name = "Strenght Toggle Bind",
-			CurrentKeybind = "",
-			HoldToInteract = false,
-			Flag = "StrenghtToggleBind", 
-			Callback = function(Keybind)
-				fstatus("Strenght Toggle".." is a "..(not(sila) and "En" or "Dis").."abled")
-				StrenghtToggle:Set(not(sila))
-			end,
-		})
 
-	usertab:CreateSection("Protections")
 
-		local AntiGrab = usertab:CreateToggle({
-			Name = "Anti Grab & Anti Blob", 
-			CurrentValue = false,
-			Flag = "AntiGrab", 
-			Callback = function(Value)
-				antiGrabToggle = Value
-				while antiGrabToggle and task.wait() do
-					local v2, v3, v1 = get_all()
-					if v1 and v2 and check_hum(v3) then
-						if v1:FindFirstChild("PartOwner") then
-							local v4 = v1.PartOwner.Value; if v4 then 
-								local v5 = S.w.chars:FindFirstChild(v4); if v5 and check_prem(v5) and check_whll(v5) then
-									task.spawn(After_AG, v5)
-								end
-							end
-							v2.Anchored = true
-							while O.me.IsHeld.Value and task.wait() do O.Events.StruggleEvent:FireServer(O.me) end
-							task.wait(0.3)
-							v2.Anchored = false
-						end
-					end
-				end
-			end,
-		})
-
-		usertab:CreateDropdown({
-			Name = "Function after Anti Grab",
-			Options = {"nothing","grab","tp to spawn","fling","kill"},
-			CurrentOption = {""},
-			MultipleOptions = false,
-			Flag = "FunctionafterAntiGrab", 
-			Callback = function(Option)
-				local temp = ""; for _,t in pairs(Option) do temp = temp..t end
-				if temp == "grab" then
-					After_AG = function(char)
-						invis_touch(char.HumanoidRootPart)
-					end
-				elseif temp == "tp to spawn" then
-					After_AG = function(char)
-						fling_plr_a(char.Head)
-					end
-				elseif temp == "fling" then
-					After_AG = function(char)
-						fling2_plr_a(char.Head)
-					end
-				elseif temp == "kill" then
-					After_AG = function(char)
-						kill_plr_a(char.Head)
-					end
-				elseif temp == "nothing" then
-					After_AG = function(...) end
-				end
-			end,
-		})
-
-		local AntiGrabLoop = usertab:CreateToggle({
-			Name = "Anti Grab Loop",
-			CurrentValue = false,
-			Flag = "AntiGrabLoop", 
-			Callback = function(Value)
-				antigrabloop = Value
-				while antigrabloop and task.wait() do O.Events.StruggleEvent:FireServer(O.me) end
-			end,
-		})
-
-		local AntiGrabTp = usertab:CreateToggle({
-			Name = "Anti Grab Tp",
-			CurrentValue = false,
-			Flag = "AntiGrabTp", 
-			Callback = function(Value)
-				antigrabtp = Value
-				while antigrabtp and task.wait() do
-					local hrp, hum = get_all()
-					if hum and check_hum(hum) then
-						hrp.CFrame = hrp.CFrame + Vector3.new(100, 0, 0); task.wait(0.08)
-						hrp.CFrame = hrp.CFrame + Vector3.new(0, 0, 100); task.wait(0.08)
-						hrp.CFrame = hrp.CFrame + Vector3.new(-100, 0, 0); task.wait(0.08)
-						hrp.CFrame = hrp.CFrame + Vector3.new(0, 0, -100); task.wait(0.08)
-					end
-				end
-			end,
-		})
-
-		-- if L.vhsows or check_admin(O.me.UserId) then
-
-		-- 	local hrp, hum = get_all()
-		-- 		if hum and check_hum(hum) then
-
-		local AntiBlobKick = usertab:CreateToggle({
-			Name = "Anti Blob Kick(Visual)",
-			CurrentValue = false,
-			Flag = "AntiBlobKick", 
-			Callback = function(Value)
-				antiblob = Value
-				for _,obj in pairs(S.w:GetDescendants()) do
-					if obj.Name == "CreatureBlobman" then
-						if obj.Parent ~= O.backpack then
-							local v1 = obj:FindFirstChild("LeftDetector")
-							local v2 = obj:FindFirstChild("RightDetector")
-							if v1 and v2 then
-								local v3 = obj.LeftDetector:FindFirstChild("AttachPlayer")
-								local v4 = obj.RightDetector:FindFirstChild("AttachPlayer")
-								if v3 and v4 then
-									v3:Destroy()
-									v4:Destroy()
-								end
-							end
-						end
-					end
-				end
-			end,
-		})
