@@ -30,7 +30,7 @@ local Window = Rayfield:CreateWindow({
       FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"Private"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+      Key = {"Coming soon"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
    }
 })
 
@@ -44,47 +44,98 @@ Rayfield:Notify({
 local Tab = Window:CreateTab("Main Page", 4483362458) -- Title, Image
 local Divider = Tab:CreateDivider()
 
-local Button = Tab:CreateButton({
+local Toggle = Tab:CreateToggle({
    Name = "Anti Grab",
-   Callback = function()
-BeingHeld.Changed:Connect(function(C)
-    if C == true then
-        local char = Player.Character
- 
-        if BeingHeld.Value == true then
-            local Event;
-            Event = R.RenderStepped:Connect(function()
-                if BeingHeld.Value == true then
-                    char["HumanoidRootPart"].AssemblyLinearVelocity = Vector3.new()
-                    StruggleEvent:FireServer(Player)
-                elseif BeingHeld.Value == false then
-                    Event:Disconnect()
+   CurrentValue = false,
+   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   local char = plr.Character
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    local hum = char:WaitForChild("Humanoid")
+    while antiGrab1T and task.wait() do
+        if plr.IsHeld.Value == true and antiGrab1T == true then
+            if hrp ~= nil then
+                if antiGrab1AnchorT then
+                    hrp.Anchored = true
+                    while plr.IsHeld.Value == true do rs.CharacterEvents.Struggle:FireServer(plr);wait(0.001) end
+                    hrp.Anchored = false
+                elseif not antiGrab1AnchorT then
+                    while plr.IsHeld.Value == true do rs.CharacterEvents.Struggle:FireServer(plr);wait(0.001) end
                 end
-            end)
+            end
         end
     end
-end)
- 
-local function reconnect()
-    local Character = Player.Character or Player.CharacterAdded:Wait()
-    local Humanoid = Character:FindFirstChildWhichIsA("Humanoid") or Character:WaitForChild("Humanoid")
-    local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
- 
-    HumanoidRootPart:WaitForChild("FirePlayerPart"):Remove()
- 
-    Humanoid.Changed:Connect(function(C)
-        if C == "Sit" and Humanoid.Sit == true then
-            if Humanoid.SeatPart ~= nil and tostring(Humanoid.SeatPart.Parent) == "CreatureBlobman" then
-            elseif Humanoid.SeatPart == nil then
-            Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
-            Humanoid.Sit = false
+end
+
+   -- The variable (Value) is a boolean on whether the toggle is true or false
+   end,
+})
+
+local Toggle = Tab:CreateToggle({
+   Name = "Anti Sticky",
+   CurrentValue = false,
+   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+function antiStickyF()
+    local char = plr.Character
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    local hum = char:WaitForChild("Humanoid")
+    if antiStickyT == true then
+        plr.PlayerScripts.StickyPartsTouchDetection.Disabled = true
+    elseif antiStickyT == false then
+        plr.PlayerScripts.StickyPartsTouchDetection.Enabled = true
+    end
+end
+   -- The variable (Value) is a boolean on whether the toggle is true or false
+   end,
+})
+
+local Toggle = Tab:CreateToggle({
+   Name = "Anti Blob",
+   CurrentValue = false,
+   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   workspace.DescendantAdded:Connect(function(toy)
+        if toy.Name == "CreatureBlobman" and toy.Parent ~= inv and antiBlob1T then
+            wait()
+            toy.LeftDetector:Destroy()
+            toy.RightDetector:Destroy()
+        end
+    end)
+end
+   -- The variable (Value) is a boolean on whether the toggle is true or false
+   end,
+})
+
+local Toggle = Tab:CreateToggle({
+   Name = "Anti explode",
+   CurrentValue = false,
+   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   local char = plr.Character
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    local hum = char:WaitForChild("Humanoid")
+    workspace.ChildAdded:Connect(function(model)
+        if model.Name == "Part" and char ~= nil and antiExplodeT then
+            local mag = (model.Position - hrp.Position).Magnitude
+            if mag <= 20 then
+                hrp.Anchored = true
+				wait(0.01)
+                while char["Right Arm"].RagdollLimbPart.CanCollide == true do wait(0.001) end
+                hrp.Anchored = false
             end
         end
     end)
 end
- 
-reconnect()
- 
-Player.CharacterAdded:Connect(reconnect)
+
+
+   -- The variable (Value) is a boolean on whether the toggle is true or false
    end,
 })
+
+
+
+
+
+
+
